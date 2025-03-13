@@ -16,5 +16,9 @@ users=$(awk -F: '$7 ~ /(\/bin\/bash|\/bin\/sh)/ {print $1}' /etc/passwd)
 
 for user in $users; do
     echo "$user:$NEW_PASSWORD" | chpasswd
-    echo "Password changed for $user"
+    if [ $? -eq 0 ]; then
+        echo "Password successfully changed for $user"
+    else
+        echo "Failed to change password for $user"
+    fi
 done
