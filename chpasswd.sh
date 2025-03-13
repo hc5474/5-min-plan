@@ -1,13 +1,19 @@
 #!/bin/bash
-# Change All Passwords for All Users (Cross-Distro Compatible)
+echo -n "Enter the new password: "
+read -s NEW_PASSWORD
+echo
 
-# Define a new secure password
-NEW_PASSWORD="NewSecurePassword"
+echo -n "Confirm the new password: "
+read -s CONFIRM_PASSWORD
+echo
 
-# List valid users with a shell
+if [ "$NEW_PASSWORD" != "$CONFIRM_PASSWORD" ]; then
+    echo "Passwords do not match. Exiting."
+    exit 1
+fi
+
 users=$(awk -F: '$7 ~ /(\/bin\/bash|\/bin\/sh)/ {print $1}' /etc/passwd)
 
-# Change passwords
 for user in $users; do
     echo "$user:$NEW_PASSWORD" | chpasswd
     echo "Password changed for $user"
