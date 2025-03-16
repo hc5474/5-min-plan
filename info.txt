@@ -1,0 +1,12 @@
+FTP
+score.txt -> CDT{BLUE_ATREIDES_1}
+
+HTTP
+HTML -> CDT{BLUE_ATREIDES_1}
+
+SSH - scoring
+whoami -> scoring
+
+SQL
+resources table in assets database -> spice
+/var/log/mysql/mysql.log

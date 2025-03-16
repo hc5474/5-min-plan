@@ -1,5 +1,7 @@
 #!/bin/bash
-# Change all FTP and SQL user passwords
+# Change all SQL user passwords, skipping Gray Team users
+
+GRAYTEAM_WHITELIST="./whitelist.txt"
 
 # Prompt for the new password
 echo -n "Enter the new password for all SQL users: "
@@ -17,15 +19,18 @@ if [ "$NEW_PASSWORD" != "$CONFIRM_PASSWORD" ]; then
     exit 1
 fi
 
-# Change MySQL/MariaDB user passwords
+# Change SQL user passwords
 echo "Changing SQL user passwords..."
 MYSQL_ROOT_USER="root"
 echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '$NEW_PASSWORD';" | mysql -u$MYSQL_ROOT_USER -p
 
-MYSQL_USERS=$(echo "SELECT User, Host FROM mysql.user WHERE User NOT IN ('root', 'mysql.sys', 'debian-sys-maint');" | mysql -u$MYSQL_ROOT_USER -p -N)
+echo "Retrieving all SQL users..."
+MYSQL_USERS=$(echo "SELECT User, Host FROM mysql.user;" | mysql -u$MYSQL_ROOT_USER -p -N)
 while read -r user host; do
+    if grep -q "^$user$" "$GRAYTEAM_WHITELIST"; then
+        echo "Skipping Gray Team user: $user@$host"
+        continue
+    fi
     echo "ALTER USER '$user'@'$host' IDENTIFIED BY '$NEW_PASSWORD';" | mysql -u$MYSQL_ROOT_USER -p
     echo "Password changed for SQL user: $user@$host"
 done <<< "$MYSQL_USERS"
-
-echo "All SQL user passwords have been updated successfully."
