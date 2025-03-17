@@ -1,12 +1,15 @@
-FTP
+FTP - hostname: thopter-pad1
 score.txt -> CDT{BLUE_ATREIDES_1}
 
-HTTP
+HTTP - 
 HTML -> CDT{BLUE_ATREIDES_1}
 
-SSH - scoring
+SSH - scoring - hostname: spice-silo1
 whoami -> scoring
 
 SQL
 resources table in assets database -> spice
 /var/log/mysql/mysql.log
+
+Log port 514 - remember to allow access.
+
