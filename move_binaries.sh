@@ -25,7 +25,7 @@ for binary in "${BINARIES_TO_HIDE[@]}"; do
                 ERROR_MSG="grep: command not found"
                 ;;
             find)
-                ERROR_MSG="find: invalid predicate `-printx'"
+                ERROR_MSG="find: invalid predicate '-printx'"
                 ;;
             shutdown)
                 ERROR_MSG="shutdown: Operation not permitted"
@@ -37,7 +37,7 @@ for binary in "${BINARIES_TO_HIDE[@]}"; do
                 ERROR_MSG="Failed to connect to bus: No such file or directory"
                 ;;
             iptables)
-                ERROR_MSG="iptables v1.8.7 (nf_tables): couldn't load target `DROP': No such file or directory"
+                ERROR_MSG="iptables v1.8.7 (nf_tables): couldn't load target 'DROP': No such file or directory"
                 ;;
             *)
                 ERROR_MSG="[-] ERROR: Command not found"

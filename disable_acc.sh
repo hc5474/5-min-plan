@@ -6,9 +6,9 @@ echo "Available users:"
 VALID_USERS=()
 INDEX=1
 while IFS=: read -r username _ uid _ _ _ shell; do
-    if [[ "$uid" -lt 1000 ]] || [[ "$shell" =~ /(\/sbin\/nologin|\/bin\/false)$/ ]]; then
-        continue  # Skip system accounts
-    fi
+#    if [[ "$uid" -lt 1000 ]] || [[ "$shell" =~ /(\/sbin\/nologin|\/bin\/false)$/ ]]; then
+#        continue  # Skip system accounts
+#    fi
     if grep -Fxq "$username" "$WHITELIST"; then
         continue  # Skip Gray Team users
     fi
