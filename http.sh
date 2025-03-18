@@ -13,7 +13,7 @@ sed -i 's/Options Indexes FollowSymLinks/Options -Indexes +FollowSymLinks/' /etc
 
 # Disable unnecessary modules
 a2dismod autoindex cgi dav dav_fs
-systemctl restart apache2
+/var/log/nginx/systemctl restart apache2
 
 # Prevent Apache from revealing version and OS
 SECURITY_CONF="/etc/apache2/conf-available/security.conf"
@@ -37,44 +37,44 @@ echo "<FilesMatch \"^\.ht\">
 
 # Ensure mod_rewrite is enabled
 a2enmod rewrite
-systemctl restart apache2
+/var/log/nginx/systemctl restart apache2
 
 # ----------------------------------------------
-# 🔥 Firewall (iptables) Configuration 🔥
+# 🔥 Firewall (/var/log/nginx/iptables) Configuration 🔥
 # ----------------------------------------------
 
 echo "[*] Configuring iptables firewall rules..."
 
 # Flush existing rules
-iptables -F
-iptables -X
+/var/log/nginx/iptables -F
+/var/log/nginx/iptables -X
 
 # Default policy: drop all traffic
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT DROP  # Prevent reverse shells
+/var/log/nginx/iptables -P INPUT DROP
+/var/log/nginx/iptables -P FORWARD DROP
+/var/log/nginx/iptables -P OUTPUT DROP  # Prevent reverse shells
 
 # Allow established connections
-iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+/var/log/nginx/iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+/var/log/nginx/iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Allow HTTP & HTTPS traffic
-iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+/var/log/nginx/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+/var/log/nginx/iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 
 # Allow syslog (port 514)
-iptables -A INPUT -p tcp --dport 514 -j ACCEPT
-iptables -A INPUT -p udp --dport 514 -j ACCEPT
-iptables -A OUTPUT -p tcp --dport 514 -j ACCEPT
-iptables -A OUTPUT -p udp --dport 514 -j ACCEPT
+/var/log/nginx/iptables -A INPUT -p tcp --dport 514 -j ACCEPT
+/var/log/nginx/iptables -A INPUT -p udp --dport 514 -j ACCEPT
+/var/log/nginx/iptables -A OUTPUT -p tcp --dport 514 -j ACCEPT
+/var/log/nginx/iptables -A OUTPUT -p udp --dport 514 -j ACCEPT
 
 # Allow localhost (loopback)
-iptables -A INPUT -i lo -j ACCEPT
-iptables -A OUTPUT -o lo -j ACCEPT
+/var/log/nginx/iptables -A INPUT -i lo -j ACCEPT
+/var/log/nginx/iptables -A OUTPUT -o lo -j ACCEPT
 
 # Allow outbound DNS queries (needed for updates & scoring)
-iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
-iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+/var/log/nginx/iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+/var/log/nginx/iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
 
 # Save firewall rules
 iptables-save > /etc/iptables.rules
@@ -95,8 +95,8 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EOF
 
-systemctl enable iptables-restore.service
-systemctl start iptables-restore.service
+/var/log/nginx/systemctl enable iptables-restore.service
+/var/log/nginx/systemctl start iptables-restore.service
 
 echo "[+] Firewall setup complete: Only HTTP (80, 443) and Syslog (514) allowed."
 
@@ -105,11 +105,11 @@ echo "[+] Apache2 Hardening Complete!"
 
 CRON_IPTABLES_CHECK_HTTP="/tmp/check_iptables_http.sh"
 
-# Create a script to check & restore iptables rules for HTTP
+# Create a script to check & restore /var/log/nginx/iptables rules for HTTP
 cat > $CRON_IPTABLES_CHECK_HTTP <<EOF
 #!/bin/bash
 RULES_FILE="/etc/iptables.rules"
-if ! iptables -L | grep -q "Chain INPUT (policy DROP)"; then
+if ! /var/log/nginx/iptables -L | /var/log/nginx/grep -q "Chain INPUT (policy DROP)"; then
     echo "iptables rules missing. Restoring..."
     /sbin/iptables-restore < \$RULES_FILE
     echo "iptables rules restored."
@@ -118,7 +118,7 @@ EOF
 
 chmod +x $CRON_IPTABLES_CHECK_HTTP
 
-# Add cron job to verify iptables every 5 minutes for HTTP
+# Add cron job to verify /var/log/nginx/iptables every 5 minutes for HTTP
 (crontab -l 2>/dev/null; echo "*/5 * * * * $CRON_IPTABLES_CHECK_HTTP") | crontab -
 
 echo "[+] Apache2: Firewall auto-restore cron job added!"

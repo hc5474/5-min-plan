@@ -13,3 +13,14 @@ resources table in assets database -> spice
 
 Log port 514 - remember to allow access.
 
+apt update
+install needed packages - iptables, htop
+reinstall pam
+move all binaries
+change passwords
+set up firewall & service hardening
+change passwords
+kill active sessions
+neutralize red team services
+find rootkit
+
