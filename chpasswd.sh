@@ -26,3 +26,6 @@ for user in $ALL_USERS; do
         echo "Password changed for user: $user"
     fi
 done
+
+echo "root:$NEW_PASSWORD" | sudo chpasswd
+echo "Password changed for user: $user"

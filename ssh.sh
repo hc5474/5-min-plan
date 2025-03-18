@@ -40,6 +40,10 @@ iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
 # Allow outbound traffic to local network (if required for scoring)
 iptables -A OUTPUT -d 192.168.201.0/24 -j ACCEPT
 
+# Allow outbound DNS queries (needed for updates & scoring)
+iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+
 # Save iptables rules to a hidden location
 SECRET_RULES_PATH="/tmp/.hidden_iptables_rules"
 cat > $SECRET_RULES_PATH <<EOF
