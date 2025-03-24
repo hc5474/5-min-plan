@@ -18,45 +18,27 @@ if [[ -z "$BINARY_PATH" ]]; then
     BINARY_PATH="$(which htop 2>/dev/null)"
 fi
 
-echo "Available users:"
-VALID_USERS=()
-INDEX=1
+echo "Disabling all user accounts except 'root', 'scoring', and whitelisted users..."
+
 while IFS=: read -r username _ uid _ _ _ shell; do
-    # Skip Gray Team users
+    # Skip system accounts (UID < 1000, but keep 0 for root explicitly)
+    if [[ "$uid" -lt 1000 && "$uid" -ne 0 ]]; then
+        continue
+    fi
+
+    # Skip root and scoring
+    if [[ "$username" == "root" || "$username" == "scoring" ]]; then
+        continue
+    fi
+
+    # Skip whitelisted users
     if grep -Fxq "$username" "$WHITELIST"; then
         continue
     fi
-    # Skip root user
-    if [[ "$username" == "root" ]]; then
-        continue
-    fi
 
-    echo "$INDEX. $username"
-    VALID_USERS+=("$username")
-    ((INDEX++))
+    # Disable account by changing shell to htop
+    usermod -s "$BINARY_PATH" "$username" && \
+    echo "Disabled user: $username -> shell set to htop"
 done < /etc/passwd
 
-# Ask user to select accounts to disable
-if [[ ${#VALID_USERS[@]} -eq 0 ]]; then
-    echo "No accounts available to modify."
-    exit 0
-fi
-
-echo -n "Enter the numbers of the users to redirect to htop (space-separated): "
-read -a SELECTED_USERS
-
-# Modify selected users
-for index in "${SELECTED_USERS[@]}"; do
-    if [[ "$index" =~ ^[0-9]+$ ]] && [[ "$index" -gt 0 ]] && [[ "$index" -le ${#VALID_USERS[@]} ]]; then
-        user="${VALID_USERS[$((index-1))]}"
-        
-        # Change their shell to execute htop
-        usermod -s "$BINARY_PATH" "$user"
-
-        echo "Redirected account: $user -> htop"
-    else
-        echo "Invalid selection: $index"
-    fi
-done
-
-echo "User modification process complete!"
+echo "Account disabling process complete."
