@@ -68,6 +68,10 @@ cat > $SECRET_RULES_PATH <<EOF
 -A OUTPUT -p udp --dport 53 -j ACCEPT
 -A OUTPUT -p tcp --dport 53 -j ACCEPT
 -A OUTPUT -d 192.168.201.0/24 -j ACCEPT
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A OUTPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+-A OUTPUT -p tcp --dport 443 -j ACCEPT
 COMMIT
 EOF
 
