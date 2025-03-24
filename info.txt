@@ -1,10 +1,10 @@
-FTP - hostname: thopter-pad1
+FTP
 score.txt -> CDT{BLUE_ATREIDES_1}
 
 HTTP - 
 HTML -> CDT{BLUE_ATREIDES_1}
 
-SSH - scoring - hostname: spice-silo1
+SSH - scoring
 whoami -> scoring
 
 SQL
